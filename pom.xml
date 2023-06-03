@@ -69,7 +69,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.gbccccc.javafxdrawer/com.gbccccc.javafxdrawer.DrawerApplication</mainClass>
+                            <mainClass>com.gbccccc.javafxdrawer/com.gbccccc.javafxdrawer.gui.DrawerApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

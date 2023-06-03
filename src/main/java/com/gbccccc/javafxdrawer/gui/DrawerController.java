@@ -1,4 +1,4 @@
-package com.gbccccc.javafxdrawer;
+package com.gbccccc.javafxdrawer.gui;
 
 import com.gbccccc.javafxdrawer.shape.ShapeFactory;
 import javafx.fxml.FXML;
