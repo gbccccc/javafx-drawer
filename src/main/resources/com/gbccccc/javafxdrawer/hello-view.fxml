@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
@@ -8,13 +9,13 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.BorderPane?>
 
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gbccccc.javafxdrawer.DrawerController">
+<SplitPane dividerPositions="0.14267834793491863" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gbccccc.javafxdrawer.DrawerController">
    <items>
-      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+      <SplitPane dividerPositions="0.5" maxWidth="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="398.0" prefWidth="250.0">
          <items>
-            <TabPane prefHeight="398.4" prefWidth="296.0">
+            <TabPane prefHeight="356.0" prefWidth="247.0">
                <tabs>
                   <Tab closable="false" text="Draw">
                      <content>
@@ -28,7 +29,7 @@
                   </Tab>
                   <Tab closable="false" text="Operate">
                      <content>
-                        <AnchorPane prefHeight="362.0" prefWidth="296.0">
+                        <AnchorPane prefHeight="144.0" prefWidth="293.0">
                            <children>
                               <ChoiceBox fx:id="operationChoiceBox" layoutX="87.0" layoutY="13.0" prefWidth="150.0" />
                               <Label layoutX="21.0" layoutY="10.0" prefHeight="30.0" prefWidth="66.0" text="Operation" />
@@ -53,6 +54,10 @@
             </AnchorPane>
          </items>
       </SplitPane>
-      <Pane maxHeight="1.7976931348623157E308" prefHeight="398.0" prefWidth="238.0" />
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
+         <center>
+            <Canvas height="640.0" width="1000.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
    </items>
 </SplitPane>
