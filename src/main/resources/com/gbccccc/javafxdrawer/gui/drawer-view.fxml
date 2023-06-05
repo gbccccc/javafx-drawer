@@ -56,7 +56,7 @@
       </SplitPane>
       <BorderPane prefHeight="200.0" prefWidth="200.0">
          <center>
-            <Canvas height="640.0" width="1000.0" BorderPane.alignment="CENTER" />
+            <Canvas fx:id="canvas" height="640.0" width="1000.0" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </items>

@@ -4,6 +4,7 @@ module com.gbccccc.javafxdrawer {
 
     requires org.controlsfx.controls;
     requires org.kordamp.ikonli.javafx;
+    requires lombok;
 
     opens com.gbccccc.javafxdrawer to javafx.fxml;
     exports com.gbccccc.javafxdrawer;
