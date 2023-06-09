@@ -13,11 +13,11 @@ public class LogList {
 
     // lazy singleton holder
     private static final class LogListHolder {
-        private static final LogList logList = new LogList();
+        private static final LogList LOG_LIST = new LogList();
     }
 
     public static LogList getLogList() {
-        return LogListHolder.logList;
+        return LogListHolder.LOG_LIST;
     }
 
     public void undo() {

@@ -1,5 +1,6 @@
 package com.gbccccc.javafxdrawer.gui.canvas.element;
 
+import com.gbccccc.javafxdrawer.log.LogList;
 import com.gbccccc.javafxdrawer.shape.util.Point;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -20,6 +21,19 @@ public class CanvasElementFactory {
     private List<Point> points;
     private CanvasElement element;
     private ElementFactoryListener listener;
+
+    private CanvasElementFactory() {
+    }
+
+
+    // lazy singleton holder
+    private static final class CanvasFactoryHolder {
+        private static final CanvasElementFactory CANVAS_ELEMENT_FACTORY = new CanvasElementFactory();
+    }
+
+    public static CanvasElementFactory getCanvasElementFactory() {
+        return CanvasFactoryHolder.CANVAS_ELEMENT_FACTORY;
+    }
 
     public CanvasElementFactory setListener(ElementFactoryListener listener) {
         this.listener = listener;
