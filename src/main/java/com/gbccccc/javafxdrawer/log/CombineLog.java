@@ -1,4 +1,4 @@
-package com.gbccccc.javafxdrawer.log.concretelog;
+package com.gbccccc.javafxdrawer.log;
 
 import com.gbccccc.javafxdrawer.log.Log;
 

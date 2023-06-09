@@ -1,8 +1,8 @@
-package com.gbccccc.javafxdrawer.log.concretelog;
+package com.gbccccc.javafxdrawer.log;
 
 import com.gbccccc.javafxdrawer.log.Log;
 
-public class DrawLog extends Log {
+public class DecombineLog extends Log {
     @Override
     public void undo() {
 

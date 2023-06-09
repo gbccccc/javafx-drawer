@@ -1,6 +1,6 @@
 package com.gbccccc.javafxdrawer.gui;
 
-import com.gbccccc.javafxdrawer.shape.element.ElementFactory;
+import com.gbccccc.javafxdrawer.gui.canvas.element.CanvasElementFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 public class DrawerController implements Initializable {
     @FXML
-    public ChoiceBox operationChoiceBox;
+    public ChoiceBox<String> operationChoiceBox;
     @FXML
     public Canvas canvas;
     @FXML
@@ -19,7 +19,6 @@ public class DrawerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        shapeChoiceBox.getItems().addAll(ElementFactory.getShapeNames());
+        shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
     }
-
 }
