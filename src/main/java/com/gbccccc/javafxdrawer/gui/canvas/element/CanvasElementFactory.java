@@ -71,6 +71,7 @@ public class CanvasElementFactory {
             element = new PolygonElement(base);
         }
         points = new ArrayList<>();
+        points.add(base);
         return this;
     }
 
@@ -78,29 +79,35 @@ public class CanvasElementFactory {
         if (element == null) {
             return this;
         }
-        if (points.size() >= element.getMaxPointNum()) {
-            finish();
-            return this;
-        }
         points.add(point);
-        element.updatePoints(points);
         return this;
     }
 
     public CanvasElementFactory amendPoint(Point point) {
         if (element != null) {
             points.set(points.size() - 1, point);
-            element.updatePoints(points);
         }
+        return this;
+    }
+
+    public CanvasElementFactory commit() {
+        // last point is the temporary point
+        if (points.size() > element.getMaxPointNum()) {
+            return this.finish();
+        }
+        element.updatePoints(points);
         return this;
     }
 
     public CanvasElementFactory finish() {
         if (element != null && listener != null) {
+            // last point is the temporary point
+            points.remove(points.size() - 1);
             if (points.size() >= element.getMinPointNum()) {
+                element.updatePoints(points);
                 listener.onFinish(element);
             }
-            reset();
+            this.reset();
         }
         return this;
     }

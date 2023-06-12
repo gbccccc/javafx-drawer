@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.util.List;
 
 public abstract class CanvasElement {
+    @Getter
     private Point base;
 
     @Getter

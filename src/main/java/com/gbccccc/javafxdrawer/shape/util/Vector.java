@@ -17,7 +17,11 @@ public class Vector {
         return new Vector(-x, -y);
     }
 
-    public Vector minus(Vector v){
+    public Vector minus(Vector v) {
         return this.add(v.negative());
+    }
+
+    public int length() {
+        return (int) Math.sqrt(x * x + y * y);
     }
 }
