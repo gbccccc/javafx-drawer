@@ -1,6 +1,5 @@
 package com.gbccccc.javafxdrawer.gui.canvas.element;
 
-import com.gbccccc.javafxdrawer.log.LogList;
 import com.gbccccc.javafxdrawer.shape.util.Point;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -8,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CanvasElementFactory {
-    private static ArrayList<String> shapeNames = new ArrayList<>(List.of(new String[]{
+    private static final ArrayList<String> shapeNames = new ArrayList<>(List.of(new String[]{
             "Circle", "Composite", "Ellipse", "Line", "Rectangle", "Polygon"
     }));
 
@@ -55,7 +54,13 @@ public class CanvasElementFactory {
         base = new Point(0, 0);
         element = null;
         points = null;
+
+        listener.onElementChanged();
         return this;
+    }
+
+    public boolean isElementBuilding() {
+        return element != null;
     }
 
     public CanvasElementFactory buildElement() {
@@ -84,18 +89,25 @@ public class CanvasElementFactory {
     }
 
     public CanvasElementFactory amendPoint(Point point) {
-        if (element != null) {
-            points.set(points.size() - 1, point);
+        if (element == null) {
+            return this;
         }
+        points.set(points.size() - 1, point);
         return this;
     }
 
     public CanvasElementFactory commit() {
+        if (element == null) {
+            return this;
+        }
+
         // last point is the temporary point
-        if (points.size() > element.getMaxPointNum()) {
+        if (points.size() - 1 >= element.getMaxPointNum() && element.getMaxPointNum() != -1) {
             return this.finish();
         }
         element.updatePoints(points);
+
+        listener.onElementChanged();
         return this;
     }
 
@@ -105,19 +117,15 @@ public class CanvasElementFactory {
             points.remove(points.size() - 1);
             if (points.size() >= element.getMinPointNum()) {
                 element.updatePoints(points);
-                listener.onFinish(element);
+                listener.onElementFinished(element);
             }
             this.reset();
         }
         return this;
     }
 
-    public CanvasElement getElement() {
-        return element;
-    }
-
     public void paintElement(GraphicsContext gc) {
-        if (element != null) {
+        if (element != null && points.size() >= element.getMinPointNum()) {
             element.paint(gc);
         }
     }

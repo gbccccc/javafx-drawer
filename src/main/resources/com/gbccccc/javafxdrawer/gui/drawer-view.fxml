@@ -15,7 +15,7 @@
    <items>
       <SplitPane dividerPositions="0.5" maxWidth="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="398.0" prefWidth="250.0">
          <items>
-            <TabPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="356.0" prefWidth="247.0">
+            <TabPane fx:id="tabPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="356.0" prefWidth="247.0">
                <tabs>
                   <Tab closable="false" text="Draw">
                      <content>

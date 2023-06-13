@@ -7,5 +7,5 @@ import lombok.Data;
 
 @Data
 public class Line {
-    Vector v =Vector.ZERO;
+    Vector v = Vector.ZERO;
 }

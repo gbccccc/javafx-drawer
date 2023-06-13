@@ -28,6 +28,10 @@ public class EllipseElement extends CanvasElement {
 
     @Override
     public void paint(GraphicsContext gc) {
-
+        gc.strokeOval(
+                getBase().getX() + (ellipse.getA() < 0 ? ellipse.getA() * 2 : 0),
+                getBase().getY() + (ellipse.getB() < 0 ? ellipse.getB() * 2 : 0),
+                Math.abs(ellipse.getA()) * 2, Math.abs(ellipse.getB()) * 2
+        );
     }
 }

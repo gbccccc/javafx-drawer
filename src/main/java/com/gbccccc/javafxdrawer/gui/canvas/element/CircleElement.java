@@ -30,6 +30,9 @@ public class CircleElement extends CanvasElement {
 
     @Override
     public void paint(GraphicsContext gc) {
-
+        gc.strokeOval(
+                getBase().getX() - circle.getRadius(), getBase().getY() - circle.getRadius(),
+                circle.getRadius() * 2, circle.getRadius() * 2
+        );
     }
 }

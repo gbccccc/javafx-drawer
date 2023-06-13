@@ -24,12 +24,14 @@ public class LineElement extends CanvasElement {
             line = new Line();
         }
 
-
         line.setV(points.get(1).minus(getBase()));
     }
 
     @Override
     public void paint(GraphicsContext gc) {
-
+        gc.strokeLine(
+                getBase().getX(), getBase().getY(),
+                getBase().getX() + line.getV().getX(), getBase().getY() + line.getV().getY()
+        );
     }
 }

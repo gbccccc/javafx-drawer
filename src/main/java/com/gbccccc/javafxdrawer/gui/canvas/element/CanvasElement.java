@@ -4,7 +4,6 @@ import com.gbccccc.javafxdrawer.shape.util.Point;
 import com.gbccccc.javafxdrawer.shape.util.Vector;
 import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
