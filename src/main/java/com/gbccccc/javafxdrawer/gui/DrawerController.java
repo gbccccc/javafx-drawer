@@ -85,9 +85,9 @@ public class DrawerController implements Initializable, ElementFactoryListener {
 
     private void repaint() {
         canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        elements.forEach(
-                element -> element.paint(canvas.getGraphicsContext2D())
-        );
+        for (CanvasElement element : elements) {
+            element.paint(canvas.getGraphicsContext2D());
+        }
         CanvasElementFactory.getCanvasElementFactory().paintElement(canvas.getGraphicsContext2D());
     }
 }
