@@ -6,8 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Vector {
-    private int x;
-    private int y;
+    public static final Vector ZERO = new Vector(0,0);
+    private double x;
+    private double y;
 
     public Vector add(Vector v) {
         return new Vector(x + v.x, y + v.y);
@@ -21,7 +22,7 @@ public class Vector {
         return this.add(v.negative());
     }
 
-    public int length() {
-        return (int) Math.sqrt(x * x + y * y);
+    public double length() {
+        return Math.sqrt(x * x + y * y);
     }
 }

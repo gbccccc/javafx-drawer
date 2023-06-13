@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Point {
-    public static Point ORIGIN = new Point(0,0);
+    public static final Point ORIGIN = new Point(0,0);
 
-    private int x;
-    private int y;
+    private double x;
+    private double y;
 
     public Point add(Vector v) {
         return new Point(x + v.getX(), y + v.getY());

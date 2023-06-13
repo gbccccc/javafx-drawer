@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class Circle {
-    private int radius = 0;
+    private double radius = 0;
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Ellipse {
-    private int a;
-    private int b;
+    private double a = 0;
+    private double b = 0;
 }

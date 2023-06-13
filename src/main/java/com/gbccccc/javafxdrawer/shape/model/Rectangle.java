@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Rectangle {
-    private int length = 0;
-    private int width = 0;
+    private double length = 0;
+    private double width = 0;
 }
