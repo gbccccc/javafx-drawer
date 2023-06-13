@@ -55,7 +55,7 @@ public class CanvasElementFactory {
         element = null;
         points = null;
 
-        listener.onElementChanged();
+        listener.onBuildingChanged();
         return this;
     }
 
@@ -63,7 +63,7 @@ public class CanvasElementFactory {
         return element != null;
     }
 
-    public CanvasElementFactory buildElement() {
+    public CanvasElementFactory buildElementPrototype() {
         if ("Circle".equals(type)) {
             element = new CircleElement(base);
         } else if ("Ellipse".equals(type)) {
@@ -107,7 +107,7 @@ public class CanvasElementFactory {
         }
         element.updatePoints(points);
 
-        listener.onElementChanged();
+        listener.onBuildingChanged();
         return this;
     }
 
@@ -117,7 +117,7 @@ public class CanvasElementFactory {
             points.remove(points.size() - 1);
             if (points.size() >= element.getMinPointNum()) {
                 element.updatePoints(points);
-                listener.onElementFinished(element);
+                listener.onBuildingFinished(element);
             }
             this.reset();
         }

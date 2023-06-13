@@ -45,6 +45,7 @@ public class DrawerController implements Initializable, ElementFactoryListener {
 
         canvas.setOnMousePressed(
                 mouseEvent -> {
+                    // right click will end the drawing process
                     if (mouseEvent.isSecondaryButtonDown()) {
                         CanvasElementFactory.getCanvasElementFactory().finish();
                         return;
@@ -57,7 +58,7 @@ public class DrawerController implements Initializable, ElementFactoryListener {
                     } else {
                         CanvasElementFactory.getCanvasElementFactory().setType(
                                 shapeChoiceBox.getValue()
-                        ).setBase(point).buildElement().addPoint(point).commit();
+                        ).setBase(point).buildElementPrototype().addPoint(point).commit();
                     }
                 }
         );
@@ -72,13 +73,13 @@ public class DrawerController implements Initializable, ElementFactoryListener {
     }
 
     @Override
-    public void onElementFinished(CanvasElement newElement) {
+    public void onBuildingFinished(CanvasElement newElement) {
         elements.add(newElement);
         repaint();
     }
 
     @Override
-    public void onElementChanged() {
+    public void onBuildingChanged() {
         repaint();
     }
 
