@@ -10,7 +10,7 @@ public class CircleElement extends CanvasElement {
     private Circle circle;
 
     public CircleElement(Point base) {
-        super(base, 2, 2);
+        super(base, "Circle", 2, 2);
     }
 
     @Override

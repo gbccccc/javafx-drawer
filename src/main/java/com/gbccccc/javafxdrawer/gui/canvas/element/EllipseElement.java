@@ -10,7 +10,7 @@ public class EllipseElement extends CanvasElement {
     private Ellipse ellipse;
 
     public EllipseElement(Point base) {
-        super(base, 2, 2);
+        super(base, "Ellipse", 2, 2);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class EllipseElement extends CanvasElement {
             return;
         }
         if (ellipse == null) {
-            ellipse = new Ellipse(0, 0);
+            ellipse = new Ellipse();
         }
 
         ellipse.setA((points.get(1).getX() - getBase().getX()) / 2);

@@ -10,7 +10,7 @@ public class RectangleElement extends CanvasElement {
     private Rectangle rectangle;
 
     public RectangleElement(Point base) {
-        super(base, 2, 2);
+        super(base, "Rectangle", 2, 2);
     }
 
     @Override

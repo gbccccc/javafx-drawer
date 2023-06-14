@@ -10,7 +10,7 @@ public class PolygonElement extends CanvasElement {
     private Polygon polygon;
 
     public PolygonElement(Point base) {
-        super(base, 2, -1);
+        super(base, "Polygon", 2, -1);
     }
 
     @Override

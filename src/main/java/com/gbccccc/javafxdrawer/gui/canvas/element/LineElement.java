@@ -10,7 +10,7 @@ public class LineElement extends CanvasElement {
     private Line line;
 
     public LineElement(Point base) {
-        super(base, 2, 2);
+        super(base, "Line", 2, 2);
     }
 
     @Override
