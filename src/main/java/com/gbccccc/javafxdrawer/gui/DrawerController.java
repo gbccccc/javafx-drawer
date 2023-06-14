@@ -8,15 +8,16 @@ import com.gbccccc.javafxdrawer.shape.util.Point;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class DrawerController implements Initializable, ElementFactoryListener, ElementListener {
     @FXML
@@ -29,23 +30,33 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     public TableView<CanvasElement> elementTable;
 
     private final ObservableList<CanvasElement> elements = FXCollections.observableList(new LinkedList<>());
+    private final Map<String, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
+    private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
+    private final Map<String, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
+    private static final ArrayList<String> operationNames = new ArrayList<>(List.of(new String[]{
+            "draw", "translate"
+    }));
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        CanvasElementFactory.getCanvasElementFactory().setListener(this);
-        shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
+        initializeChoiceBoxes();
+        initializeCanvas();
+        initializeTable();
+    }
 
+    private void initializeChoiceBoxes() {
+        shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
         shapeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observableValue, number, t1) -> CanvasElementFactory.getCanvasElementFactory().reset()
         );
 
-        initializeCanvas();
-
-        initializeTable();
+        operationChoiceBox.getItems().addAll(operationNames);
+        operationChoiceBox.getSelectionModel().selectFirst();
     }
 
     private void initializeCanvas() {
-        canvas.setOnMousePressed(
+        CanvasElementFactory.getCanvasElementFactory().setListener(this);
+        mousePressedHandlers.put("draw",
                 mouseEvent -> {
                     // right click will end the drawing process
                     if (mouseEvent.isSecondaryButtonDown()) {
@@ -67,14 +78,32 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                     }
                 }
         );
-        canvas.setOnMouseMoved(
+        mouseMovedHandlers.put("draw",
                 mouseEvent -> {
                     if (CanvasElementFactory.getCanvasElementFactory().isElementBuilding()) {
                         CanvasElementFactory.getCanvasElementFactory().amendPoint(
                                 new Point(mouseEvent.getX(), mouseEvent.getY())
                         ).commit();
                     }
-                });
+                }
+        );
+
+        canvas.setOnMousePressed(
+                mouseEvent -> {
+                    String operation = operationChoiceBox.getValue();
+                    if (mousePressedHandlers.containsKey(operation)) {
+                        mousePressedHandlers.get(operation).handle(mouseEvent);
+                    }
+                }
+        );
+        canvas.setOnMouseMoved(
+                mouseEvent -> {
+                    String operation = operationChoiceBox.getValue();
+                    if (mouseMovedHandlers.containsKey(operation)) {
+                        mouseMovedHandlers.get(operation).handle(mouseEvent);
+                    }
+                }
+        );
     }
 
     private void initializeTable() {
