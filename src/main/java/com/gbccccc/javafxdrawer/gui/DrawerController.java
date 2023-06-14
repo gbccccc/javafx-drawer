@@ -1,32 +1,24 @@
 package com.gbccccc.javafxdrawer.gui;
 
 import com.gbccccc.javafxdrawer.gui.canvas.element.CanvasElement;
-import com.gbccccc.javafxdrawer.gui.canvas.element.CanvasElementFactory;
-import com.gbccccc.javafxdrawer.gui.canvas.element.ElementFactoryListener;
+import com.gbccccc.javafxdrawer.gui.canvas.factory.CanvasElementFactory;
+import com.gbccccc.javafxdrawer.gui.canvas.factory.ElementFactoryListener;
 import com.gbccccc.javafxdrawer.gui.canvas.element.ElementListener;
 import com.gbccccc.javafxdrawer.shape.util.Point;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.InputMethodEvent;
-import javafx.util.Callback;
-import javafx.util.converter.DefaultStringConverter;
 
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class DrawerController implements Initializable, ElementFactoryListener, ElementListener {
-    @FXML
-    private TabPane tabPane;
     @FXML
     private ChoiceBox<String> operationChoiceBox;
     @FXML
@@ -42,13 +34,6 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         CanvasElementFactory.getCanvasElementFactory().setListener(this);
         shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
-
-        tabPane.getSelectionModel().selectedIndexProperty().addListener(
-                (observableValue, tabSingleSelectionModel, t1) -> {
-                    operationChoiceBox.getSelectionModel().clearSelection();
-                    shapeChoiceBox.getSelectionModel().clearSelection();
-                }
-        );
 
         shapeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observableValue, number, t1) -> CanvasElementFactory.getCanvasElementFactory().reset()

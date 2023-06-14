@@ -12,4 +12,5 @@ module com.gbccccc.javafxdrawer {
     opens com.gbccccc.javafxdrawer.gui to javafx.fxml;
     exports com.gbccccc.javafxdrawer.gui.canvas.element;
     exports com.gbccccc.javafxdrawer.shape.util;
+    exports com.gbccccc.javafxdrawer.gui.canvas.factory;
 }

@@ -4,8 +4,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -14,30 +12,14 @@
     <items>
         <SplitPane dividerPositions="0.5" maxWidth="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="398.0" prefWidth="250.0">
             <items>
-                <TabPane fx:id="tabPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="356.0" prefWidth="247.0">
-                    <tabs>
-                        <Tab closable="false" text="Draw">
-                            <content>
-                                <AnchorPane prefHeight="362.0" prefWidth="296.0">
-                                    <children>
-                                        <ChoiceBox fx:id="shapeChoiceBox" layoutX="73.0" layoutY="14.0" prefWidth="150.0" />
-                                        <Label layoutX="21.0" layoutY="10.0" prefHeight="30.0" prefWidth="42.0" text="Shape" />
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
-                        <Tab closable="false" text="Operate">
-                            <content>
-                                <AnchorPane prefHeight="144.0" prefWidth="293.0">
-                                    <children>
-                                        <ChoiceBox fx:id="operationChoiceBox" layoutX="87.0" layoutY="13.0" prefWidth="150.0" />
-                                        <Label layoutX="21.0" layoutY="10.0" prefHeight="30.0" prefWidth="66.0" text="Operation" />
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
+                    <AnchorPane prefHeight="362.0" prefWidth="296.0">
+                        <children>
+                            <ChoiceBox fx:id="shapeChoiceBox" layoutX="73.0" layoutY="14.0" prefWidth="150.0" />
+                            <Label layoutX="21.0" layoutY="10.0" prefHeight="30.0" prefWidth="42.0" text="Shape" />
+                            <ChoiceBox fx:id="operationChoiceBox" layoutX="73.0" layoutY="51.0" prefWidth="150.0" />
+                            <Label layoutX="9.0" layoutY="47.0" prefHeight="30.0" prefWidth="66.0" text="Operation" />
+                        </children>
+                    </AnchorPane>
                 <AnchorPane prefHeight="200.0" prefWidth="200.0">
                     <children>
                         <TableView fx:id="elementTable" editable="true" prefHeight="200.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
