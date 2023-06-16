@@ -64,13 +64,13 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
 
     private void initializeChoiceBoxes() {
         shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
+        shapeChoiceBox.getSelectionModel().selectFirst();
         shapeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observableValue, number, t1) -> {
                     CanvasElementFactory.getCanvasElementFactory().reset();
                     operationChoiceBox.getSelectionModel().select("draw");
                 }
         );
-        shapeChoiceBox.getSelectionModel().selectFirst();
 
         operationChoiceBox.getItems().addAll(operationNames);
         operationChoiceBox.getSelectionModel().selectFirst();
