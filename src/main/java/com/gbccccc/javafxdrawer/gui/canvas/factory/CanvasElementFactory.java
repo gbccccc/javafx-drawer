@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CanvasElementFactory {
     private static final ArrayList<String> shapeNames = new ArrayList<>(List.of(new String[]{
-            "Circle", "Ellipse", "Line", "Rectangle", "Polygon"
+            "Line", "Rectangle", "Polygon", "Circle", "Ellipse"
     }));
 
     public static String[] getShapeNames() {

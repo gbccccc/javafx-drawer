@@ -70,6 +70,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                     operationChoiceBox.getSelectionModel().select("draw");
                 }
         );
+        shapeChoiceBox.getSelectionModel().selectFirst();
 
         operationChoiceBox.getItems().addAll(operationNames);
         operationChoiceBox.getSelectionModel().selectFirst();
