@@ -45,7 +45,9 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
+    private final Map<KeyCode, EventHandler<KeyEvent>> keyHandlers = new HashMap<>();
     private final Map<KeyCode, EventHandler<KeyEvent>> keyWithControlHandlers = new HashMap<>();
+    private final Map<KeyCode, EventHandler<KeyEvent>> keyWithShiftHandlers = new HashMap<>();
 
 
     private static final ArrayList<String> operationNames = new ArrayList<>(List.of(new String[]{
@@ -237,14 +239,63 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // remove
+        keyHandlers.put(KeyCode.DELETE,
+                keyEvent -> {
+                    List<CanvasElement> selectedElements = new ArrayList<>(elementTable.getSelectionModel().getSelectedItems());
+                    if (selectedElements.isEmpty()) {
+                        return;
+                    }
+
+                    for (CanvasElement element : selectedElements) {
+                        removeElement(element);
+                    }
+                }
+        );
+
+        // operation shortcuts
+        keyHandlers.put(KeyCode.DIGIT1,
+                keyEvent -> operationChoiceBox.getSelectionModel().select("draw")
+        );
+        keyHandlers.put(KeyCode.DIGIT2,
+                keyEvent -> operationChoiceBox.getSelectionModel().select("move")
+        );
+
+        // selection shortcuts
+        keyHandlers.put(KeyCode.W,
+                keyEvent -> elementTable.getSelectionModel().clearAndSelect(
+                        elementTable.getSelectionModel().getFocusedIndex() - 1
+                )
+        );
+        keyHandlers.put(KeyCode.S,
+                keyEvent -> elementTable.getSelectionModel().clearAndSelect(
+                        elementTable.getSelectionModel().getFocusedIndex() + 1
+                )
+        );
+        keyWithShiftHandlers.put(KeyCode.W,
+                keyEvent -> elementTable.getSelectionModel().selectPrevious()
+        );
+        keyWithShiftHandlers.put(KeyCode.S,
+                keyEvent -> elementTable.getSelectionModel().selectNext()
+        );
 
         mainScene.setOnKeyPressed(
                 keyEvent -> {
-                    if (!keyEvent.isControlDown()) {
+                    if (keyEvent.isControlDown()) {
+                        if (keyWithControlHandlers.containsKey(keyEvent.getCode())) {
+                            keyWithControlHandlers.get(keyEvent.getCode()).handle(keyEvent);
+                        }
                         return;
                     }
-                    if (keyWithControlHandlers.containsKey(keyEvent.getCode())) {
-                        keyWithControlHandlers.get(keyEvent.getCode()).handle(keyEvent);
+                    if (keyEvent.isShiftDown()) {
+                        if (keyWithShiftHandlers.containsKey(keyEvent.getCode())) {
+                            keyWithShiftHandlers.get(keyEvent.getCode()).handle(keyEvent);
+                        }
+                        return;
+                    }
+
+                    if (keyHandlers.containsKey(keyEvent.getCode())) {
+                        keyHandlers.get(keyEvent.getCode()).handle(keyEvent);
                     }
                 }
         );
