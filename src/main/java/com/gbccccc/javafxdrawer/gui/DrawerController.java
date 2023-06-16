@@ -205,6 +205,12 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                     for (CanvasElement element : copiedElements) {
                         addElement(element);
                     }
+
+                    List<CanvasElement> tempCopiedElements = new ArrayList<>(copiedElements);
+                    copiedElements.clear();
+                    for (CanvasElement element : tempCopiedElements) {
+                        copiedElements.add(element.clone());
+                    }
                 }
         );
 
