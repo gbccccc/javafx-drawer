@@ -8,8 +8,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-public abstract class CanvasElement {
-    @Getter
+public abstract class CanvasElement implements Cloneable{
     private Point base;
 
     @Getter
@@ -21,6 +20,12 @@ public abstract class CanvasElement {
 
     @Getter
     private String label;
+    @Setter
+    private ElementListener listener;
+
+    protected Point getBase() {
+        return base;
+    }
 
     public void setLabel(String label) {
         this.label = label;
@@ -29,8 +34,6 @@ public abstract class CanvasElement {
         }
     }
 
-    @Setter
-    private ElementListener listener;
 
     public CanvasElement(Point base, String type, int minPointNum, int maxPointNum) {
         this.base = base;
@@ -47,6 +50,17 @@ public abstract class CanvasElement {
         base = base.add(v);
         if (listener != null) {
             listener.onElementChanged();
+        }
+    }
+
+    @Override
+    public CanvasElement clone() {
+        try {
+            CanvasElement clone = (CanvasElement) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
         }
     }
 }

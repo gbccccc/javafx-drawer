@@ -15,12 +15,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.util.*;
 
 public class DrawerController implements Initializable, ElementFactoryListener, ElementListener {
+    @FXML
+    private SplitPane mainScene;
     @FXML
     private ChoiceBox<String> operationChoiceBox;
     @FXML
@@ -34,10 +38,15 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private Point lastMousePoint;
 
     private final ObservableList<CanvasElement> elements = FXCollections.observableList(new LinkedList<>());
+    private List<CanvasElement> copiedElements = new ArrayList<>();
+
     private final Map<String, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
+    private final Map<KeyCode, EventHandler<KeyEvent>> keyWithControlHandlers = new HashMap<>();
+
+
     private static final ArrayList<String> operationNames = new ArrayList<>(List.of(new String[]{
             "draw", "move"
     }));
@@ -47,12 +56,16 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         initializeChoiceBoxes();
         initializeCanvas();
         initializeTable();
+        initializeShortcutKey();
     }
 
     private void initializeChoiceBoxes() {
         shapeChoiceBox.getItems().addAll(CanvasElementFactory.getShapeNames());
         shapeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
-                (observableValue, number, t1) -> CanvasElementFactory.getCanvasElementFactory().reset()
+                (observableValue, number, t1) -> {
+                    CanvasElementFactory.getCanvasElementFactory().reset();
+                    operationChoiceBox.getSelectionModel().select("draw");
+                }
         );
 
         operationChoiceBox.getItems().addAll(operationNames);
@@ -97,12 +110,10 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 mouseEvent -> {
                     originMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
                     lastMousePoint = originMousePoint;
-                    System.out.println("click");
                 }
         );
         mouseDraggedHandlers.put("move",
                 mouseEvent -> {
-                    System.out.println("drag");
                     Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
                     Vector translation = curMousePoint.minus(lastMousePoint);
                     for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
@@ -113,7 +124,6 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         );
         mouseReleasedHandlers.put("move",
                 mouseEvent -> {
-                    System.out.println("release");
                     Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
                     Vector translation = curMousePoint.minus(lastMousePoint);
                     for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
@@ -159,6 +169,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private void initializeTable() {
         elementTable.setItems(elements);
         elementTable.setEditable(true);
+        elementTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         TableColumn<CanvasElement, String> type = new TableColumn<>("Type");
         type.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getType()));
@@ -172,6 +183,42 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         elementTable.getColumns().add(label);
     }
 
+
+    private void initializeShortcutKey() {
+        // copy
+        keyWithControlHandlers.put(KeyCode.C,
+                keyEvent -> {
+                    copiedElements.clear();
+                    for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
+                        copiedElements.add(element.clone());
+                    }
+                }
+        );
+        // paste
+        keyWithControlHandlers.put(KeyCode.V,
+                keyEvent -> {
+                    if (copiedElements == null || copiedElements.isEmpty()) {
+                        return;
+                    }
+
+                    for (CanvasElement element : copiedElements) {
+                        addElement(element);
+                    }
+                }
+        );
+
+        mainScene.setOnKeyPressed(
+                keyEvent -> {
+                    if (!keyEvent.isControlDown()) {
+                        return;
+                    }
+                    if (keyWithControlHandlers.containsKey(keyEvent.getCode())) {
+                        keyWithControlHandlers.get(keyEvent.getCode()).handle(keyEvent);
+                    }
+                }
+        );
+    }
+
     private void repaint() {
         canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (CanvasElement element : elements) {
@@ -180,18 +227,21 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         CanvasElementFactory.getCanvasElementFactory().paintElement(canvas.getGraphicsContext2D());
     }
 
+    private void addElement(CanvasElement element) {
+        element.setListener(this);
+        elements.add(element);
+        repaint();
+    }
+
     @Override
     public void onBuildingFinished(CanvasElement newElement) {
-        newElement.setListener(this);
-        elements.add(newElement);
-        repaint();
+        addElement(newElement);
     }
 
     @Override
     public void onBuildingChanged() {
         repaint();
     }
-
 
     @Override
     public void onElementChanged() {
