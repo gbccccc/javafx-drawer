@@ -1,6 +1,7 @@
 package com.gbccccc.javafxdrawer.gui;
 
 import com.gbccccc.javafxdrawer.gui.canvas.element.CanvasElement;
+import com.gbccccc.javafxdrawer.gui.canvas.element.CompositeElement;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.CanvasElementFactory;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.ElementFactoryListener;
 import com.gbccccc.javafxdrawer.gui.canvas.element.ElementListener;
@@ -207,6 +208,30 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // bind
+        keyWithControlHandlers.put(KeyCode.B,
+                keyEvent -> {
+                    List<CanvasElement> selectedElements = new ArrayList<>(elementTable.getSelectionModel().getSelectedItems());
+                    if (selectedElements.isEmpty()) {
+                        return;
+                    }
+
+                    bindElements(selectedElements);
+                }
+        );
+        // unbind
+        keyWithControlHandlers.put(KeyCode.D,
+                keyEvent -> {
+                    if (elementTable.getSelectionModel().getSelectedItems().size() != 1) {
+                        return;
+                    }
+                    if (elementTable.getSelectionModel().getSelectedItem() instanceof CompositeElement compositeElement) {
+                        unbindElements(compositeElement);
+                    }
+                }
+        );
+
+
         mainScene.setOnKeyPressed(
                 keyEvent -> {
                     if (!keyEvent.isControlDown()) {
@@ -227,9 +252,27 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         CanvasElementFactory.getCanvasElementFactory().paintElement(canvas.getGraphicsContext2D());
     }
 
+    private void bindElements(List<CanvasElement> children) {
+        CompositeElement compositeElement = new CompositeElement(children);
+        elements.add(compositeElement);
+        elements.removeAll(children);
+        repaint();
+    }
+
+    private void unbindElements(CompositeElement compositeElement) {
+        elements.addAll(compositeElement.getChildren());
+        elements.remove(compositeElement);
+        repaint();
+    }
+
     private void addElement(CanvasElement element) {
         element.setListener(this);
         elements.add(element);
+        repaint();
+    }
+
+    private void removeElement(CanvasElement element) {
+        elements.remove(element);
         repaint();
     }
 
