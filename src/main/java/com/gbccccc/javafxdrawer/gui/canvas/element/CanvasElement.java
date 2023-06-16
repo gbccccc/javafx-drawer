@@ -43,7 +43,7 @@ public abstract class CanvasElement {
 
     public abstract void paint(GraphicsContext gc);
 
-    public void translate(Vector v) {
+    public void move(Vector v) {
         base = base.add(v);
         if (listener != null) {
             listener.onElementChanged();

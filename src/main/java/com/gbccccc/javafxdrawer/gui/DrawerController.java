@@ -5,6 +5,7 @@ import com.gbccccc.javafxdrawer.gui.canvas.factory.CanvasElementFactory;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.ElementFactoryListener;
 import com.gbccccc.javafxdrawer.gui.canvas.element.ElementListener;
 import com.gbccccc.javafxdrawer.shape.util.Point;
+import com.gbccccc.javafxdrawer.shape.util.Vector;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,12 +30,16 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     @FXML
     public TableView<CanvasElement> elementTable;
 
+    private Point originMousePoint;
+    private Point lastMousePoint;
+
     private final ObservableList<CanvasElement> elements = FXCollections.observableList(new LinkedList<>());
     private final Map<String, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
+    private final Map<String, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
     private static final ArrayList<String> operationNames = new ArrayList<>(List.of(new String[]{
-            "draw", "translate"
+            "draw", "move"
     }));
 
     @Override
@@ -88,6 +93,35 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        mousePressedHandlers.put("move",
+                mouseEvent -> {
+                    originMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                    lastMousePoint = originMousePoint;
+                    System.out.println("click");
+                }
+        );
+        mouseDraggedHandlers.put("move",
+                mouseEvent -> {
+                    System.out.println("drag");
+                    Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                    Vector translation = curMousePoint.minus(lastMousePoint);
+                    for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
+                        element.move(translation);
+                    }
+                    lastMousePoint = curMousePoint;
+                }
+        );
+        mouseReleasedHandlers.put("move",
+                mouseEvent -> {
+                    System.out.println("release");
+                    Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                    Vector translation = curMousePoint.minus(lastMousePoint);
+                    for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
+                        element.move(translation);
+                    }
+                }
+        );
+
         canvas.setOnMousePressed(
                 mouseEvent -> {
                     String operation = operationChoiceBox.getValue();
@@ -101,6 +135,22 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                     String operation = operationChoiceBox.getValue();
                     if (mouseMovedHandlers.containsKey(operation)) {
                         mouseMovedHandlers.get(operation).handle(mouseEvent);
+                    }
+                }
+        );
+        canvas.setOnMouseDragged(
+                mouseEvent -> {
+                    String operation = operationChoiceBox.getValue();
+                    if (mouseDraggedHandlers.containsKey(operation)) {
+                        mouseDraggedHandlers.get(operation).handle(mouseEvent);
+                    }
+                }
+        );
+        canvas.setOnMouseReleased(
+                mouseEvent -> {
+                    String operation = operationChoiceBox.getValue();
+                    if (mouseReleasedHandlers.containsKey(operation)) {
+                        mouseReleasedHandlers.get(operation).handle(mouseEvent);
                     }
                 }
         );
