@@ -254,12 +254,26 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // shape shortcuts
+        keyHandlers.put(KeyCode.Q,
+                keyEvent -> shapeChoiceBox.getSelectionModel().selectPrevious()
+        );
+        keyHandlers.put(KeyCode.E,
+                keyEvent -> shapeChoiceBox.getSelectionModel().selectNext()
+        );
+
         // operation shortcuts
         keyHandlers.put(KeyCode.DIGIT1,
                 keyEvent -> operationChoiceBox.getSelectionModel().select("draw")
         );
         keyHandlers.put(KeyCode.DIGIT2,
                 keyEvent -> operationChoiceBox.getSelectionModel().select("move")
+        );
+        keyHandlers.put(KeyCode.A,
+                keyEvent -> operationChoiceBox.getSelectionModel().selectPrevious()
+        );
+        keyHandlers.put(KeyCode.D,
+                keyEvent -> operationChoiceBox.getSelectionModel().selectNext()
         );
 
         // selection shortcuts
