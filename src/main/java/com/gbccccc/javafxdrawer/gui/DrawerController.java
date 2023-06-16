@@ -263,20 +263,49 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
 
         // selection shortcuts
         keyHandlers.put(KeyCode.W,
-                keyEvent -> elementTable.getSelectionModel().clearAndSelect(
-                        elementTable.getSelectionModel().getFocusedIndex() - 1
-                )
+                keyEvent ->
+                {
+                    if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
+                        elementTable.getSelectionModel().selectLast();
+                        return;
+                    }
+
+                    elementTable.getSelectionModel().clearAndSelect(
+                            elementTable.getSelectionModel().getFocusedIndex() - 1
+                    );
+                }
         );
         keyHandlers.put(KeyCode.S,
-                keyEvent -> elementTable.getSelectionModel().clearAndSelect(
-                        elementTable.getSelectionModel().getFocusedIndex() + 1
-                )
+                keyEvent -> {
+                    if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
+                        elementTable.getSelectionModel().selectFirst();
+                        return;
+                    }
+
+                    elementTable.getSelectionModel().clearAndSelect(
+                            elementTable.getSelectionModel().getFocusedIndex() + 1
+                    );
+                }
         );
         keyWithShiftHandlers.put(KeyCode.W,
-                keyEvent -> elementTable.getSelectionModel().selectPrevious()
+                keyEvent -> {
+                    if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
+                        elementTable.getSelectionModel().selectLast();
+                        return;
+                    }
+
+                    elementTable.getSelectionModel().selectPrevious();
+                }
         );
         keyWithShiftHandlers.put(KeyCode.S,
-                keyEvent -> elementTable.getSelectionModel().selectNext()
+                keyEvent -> {
+                    if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
+                        elementTable.getSelectionModel().selectFirst();
+                        return;
+                    }
+
+                    elementTable.getSelectionModel().selectNext();
+                }
         );
 
         mainScene.setOnKeyPressed(
