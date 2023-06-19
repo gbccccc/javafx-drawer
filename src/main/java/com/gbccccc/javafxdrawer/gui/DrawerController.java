@@ -5,8 +5,9 @@ import com.gbccccc.javafxdrawer.gui.canvas.element.CompositeElement;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.CanvasElementFactory;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.ElementFactoryListener;
 import com.gbccccc.javafxdrawer.gui.canvas.element.ElementListener;
+import com.gbccccc.javafxdrawer.gui.log.*;
 import com.gbccccc.javafxdrawer.shape.util.Point;
-import com.gbccccc.javafxdrawer.shape.util.Vector;
+import com.gbccccc.javafxdrawer.shape.util.Translation;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +40,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private Point lastMousePoint;
 
     private final ObservableList<CanvasElement> elements = FXCollections.observableList(new LinkedList<>());
-    private List<CanvasElement> copiedElements = new ArrayList<>();
+    private final List<CanvasElement> copiedElements = new ArrayList<>();
 
     private final Map<String, EventHandler<MouseEvent>> mousePressedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
@@ -49,6 +50,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private final Map<KeyCode, EventHandler<KeyEvent>> keyWithControlHandlers = new HashMap<>();
     private final Map<KeyCode, EventHandler<KeyEvent>> keyWithShiftHandlers = new HashMap<>();
 
+    private final LogList logList = new LogList();
 
     private static final ArrayList<String> operationNames = new ArrayList<>(List.of(new String[]{
             "draw", "move"
@@ -112,14 +114,24 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
 
         mousePressedHandlers.put("move",
                 mouseEvent -> {
+                    List<CanvasElement> selectedElements = elementTable.getSelectionModel().getSelectedItems();
+                    if (selectedElements.isEmpty()) {
+                        return;
+                    }
+
                     originMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
                     lastMousePoint = originMousePoint;
                 }
         );
         mouseDraggedHandlers.put("move",
                 mouseEvent -> {
+                    List<CanvasElement> selectedElements = elementTable.getSelectionModel().getSelectedItems();
+                    if (selectedElements.isEmpty()) {
+                        return;
+                    }
+
                     Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-                    Vector translation = curMousePoint.minus(lastMousePoint);
+                    Translation translation = curMousePoint.minus(lastMousePoint);
                     for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
                         element.move(translation);
                     }
@@ -128,11 +140,18 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         );
         mouseReleasedHandlers.put("move",
                 mouseEvent -> {
+                    List<CanvasElement> selectedElements = elementTable.getSelectionModel().getSelectedItems();
+                    if (selectedElements.isEmpty()) {
+                        return;
+                    }
+
                     Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-                    Vector translation = curMousePoint.minus(lastMousePoint);
-                    for (CanvasElement element : elementTable.getSelectionModel().getSelectedItems()) {
+                    Translation translation = curMousePoint.minus(lastMousePoint);
+                    for (CanvasElement element : selectedElements) {
                         element.move(translation);
                     }
+
+                    logList.addLog(new MoveLog(selectedElements, curMousePoint.minus(originMousePoint)));
                 }
         );
 
@@ -183,7 +202,10 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         label.setCellFactory(TextFieldTableCell.forTableColumn());
         label.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getLabel()));
         label.setEditable(true);
-        label.setOnEditCommit(event -> event.getRowValue().setLabel(event.getNewValue()));
+//        label.setOnEditCommit(event -> event.getRowValue().setLabel(event.getNewValue()));
+        label.setOnEditCommit(
+                event -> actionWithLog(new LabelLog(event.getRowValue(), event.getOldValue(), event.getNewValue()))
+        );
         elementTable.getColumns().add(label);
     }
 
@@ -201,14 +223,13 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         // paste
         keyWithControlHandlers.put(KeyCode.V,
                 keyEvent -> {
-                    if (copiedElements == null || copiedElements.isEmpty()) {
+                    if (copiedElements.isEmpty()) {
                         return;
                     }
 
-                    for (CanvasElement element : copiedElements) {
-                        addElement(element);
-                    }
+                    addElements(copiedElements);
 
+                    // prepare new copies for the possible next paste
                     List<CanvasElement> tempCopiedElements = new ArrayList<>(copiedElements);
                     copiedElements.clear();
                     for (CanvasElement element : tempCopiedElements) {
@@ -248,9 +269,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                         return;
                     }
 
-                    for (CanvasElement element : selectedElements) {
-                        removeElement(element);
-                    }
+                    removeElements(selectedElements);
                 }
         );
 
@@ -323,6 +342,20 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // undo and redo
+        keyWithControlHandlers.put(KeyCode.Z,
+                keyEvent -> {
+                    logList.undo();
+                    this.repaint();
+                }
+        );
+        keyWithControlHandlers.put(KeyCode.Y,
+                keyEvent -> {
+                    logList.redo();
+                    this.repaint();
+                }
+        );
+
         mainScene.setOnKeyPressed(
                 keyEvent -> {
                     if (keyEvent.isControlDown()) {
@@ -355,25 +388,37 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
 
     private void bindElements(List<CanvasElement> children) {
         CompositeElement compositeElement = new CompositeElement(children);
-        elements.add(compositeElement);
-        elements.removeAll(children);
-        repaint();
+        actionWithLog(new BindLog(compositeElement, elements));
     }
 
     private void unbindElements(CompositeElement compositeElement) {
-        elements.addAll(compositeElement.getChildren());
-        elements.remove(compositeElement);
-        repaint();
+        actionWithLog(new UnbindLog(compositeElement, elements));
     }
 
-    private void addElement(CanvasElement element) {
-        element.setListener(this);
-        elements.add(element);
-        repaint();
+    private void addElement(CanvasElement toAdd) {
+        toAdd.setListener(this);
+        actionWithLog(new AddLog(toAdd, elements));
     }
 
-    private void removeElement(CanvasElement element) {
-        elements.remove(element);
+    private void addElements(List<CanvasElement> toAdds) {
+        for (CanvasElement toAdd : toAdds) {
+            toAdd.setListener(this);
+        }
+        actionWithLog(new AddLog(toAdds, elements));
+    }
+
+    private void removeElement(CanvasElement toRemove) {
+        actionWithLog(new RemoveLog(toRemove, elements));
+    }
+
+    private void removeElements(List<CanvasElement> toRemoves) {
+        actionWithLog(new RemoveLog(toRemoves, elements));
+    }
+
+    // do the redo of a log, and then add the log into the log list
+    private void actionWithLog(Log log) {
+        log.redo();
+        logList.addLog(log);
         repaint();
     }
 
@@ -390,5 +435,6 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     @Override
     public void onElementChanged() {
         repaint();
+        elementTable.refresh();
     }
 }

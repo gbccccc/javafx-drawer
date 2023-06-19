@@ -5,20 +5,20 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Vector {
-    public static final Vector ZERO = new Vector(0,0);
+public class Translation {
+    public static final Translation ZERO = new Translation(0,0);
     private double x;
     private double y;
 
-    public Vector add(Vector v) {
-        return new Vector(x + v.x, y + v.y);
+    public Translation add(Translation t) {
+        return new Translation(x + t.x, y + t.y);
     }
 
-    public Vector negative() {
-        return new Vector(-x, -y);
+    public Translation negative() {
+        return new Translation(-x, -y);
     }
 
-    public Vector minus(Vector v) {
+    public Translation minus(Translation v) {
         return this.add(v.negative());
     }
 

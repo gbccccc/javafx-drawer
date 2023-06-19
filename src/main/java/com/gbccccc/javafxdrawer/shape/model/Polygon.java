@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gbccccc.javafxdrawer.shape.util.Point;
-import com.gbccccc.javafxdrawer.shape.util.Vector;
+import com.gbccccc.javafxdrawer.shape.util.Translation;
 import lombok.Data;
 
 @Data
@@ -18,7 +18,7 @@ public class Polygon {
 
         this.points.clear();
         // force first point of this.points to be (0, 0)
-        Vector displacement = Point.ORIGIN.minus(points.get(0));
+        Translation displacement = Point.ORIGIN.minus(points.get(0));
 
         points.forEach(
                 (point) -> this.points.add(point.add(displacement))

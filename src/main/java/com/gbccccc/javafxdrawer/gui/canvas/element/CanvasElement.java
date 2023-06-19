@@ -1,7 +1,7 @@
 package com.gbccccc.javafxdrawer.gui.canvas.element;
 
 import com.gbccccc.javafxdrawer.shape.util.Point;
-import com.gbccccc.javafxdrawer.shape.util.Vector;
+import com.gbccccc.javafxdrawer.shape.util.Translation;
 import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,8 +46,8 @@ public abstract class CanvasElement implements Cloneable{
 
     public abstract void paint(GraphicsContext gc);
 
-    public void move(Vector v) {
-        base = base.add(v);
+    public void move(Translation translation) {
+        base = base.add(translation);
         if (listener != null) {
             listener.onElementChanged();
         }

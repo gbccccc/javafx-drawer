@@ -1,9 +1,8 @@
 package com.gbccccc.javafxdrawer.gui.canvas.element;
 
 import com.gbccccc.javafxdrawer.shape.util.Point;
-import com.gbccccc.javafxdrawer.shape.util.Vector;
+import com.gbccccc.javafxdrawer.shape.util.Translation;
 import javafx.scene.canvas.GraphicsContext;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class CompositeElement extends CanvasElement {
     }
 
     @Override
-    public void move(Vector v) {
+    public void move(Translation v) {
         for (CanvasElement child : children) {
             child.move(v);
         }

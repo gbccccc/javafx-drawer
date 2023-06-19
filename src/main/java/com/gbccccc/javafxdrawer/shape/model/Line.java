@@ -1,9 +1,9 @@
 package com.gbccccc.javafxdrawer.shape.model;
 
-import com.gbccccc.javafxdrawer.shape.util.Vector;
+import com.gbccccc.javafxdrawer.shape.util.Translation;
 import lombok.Data;
 
 @Data
 public class Line {
-    Vector v = Vector.ZERO;
+    Translation v = Translation.ZERO;
 }
