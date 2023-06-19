@@ -155,6 +155,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // basic handlers
         canvas.setOnMousePressed(
                 mouseEvent -> {
                     String operation = operationChoiceBox.getValue();
@@ -200,9 +201,10 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
 
         TableColumn<CanvasElement, String> label = new TableColumn<>("Label");
         label.setCellFactory(TextFieldTableCell.forTableColumn());
-        label.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getLabel()));
+        label.setCellValueFactory(
+                element -> new SimpleStringProperty(element.getValue().getLabel())
+        );
         label.setEditable(true);
-//        label.setOnEditCommit(event -> event.getRowValue().setLabel(event.getNewValue()));
         label.setOnEditCommit(
                 event -> actionWithLog(new LabelLog(event.getRowValue(), event.getOldValue(), event.getNewValue()))
         );
@@ -356,6 +358,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 }
         );
 
+        // basic handler
         mainScene.setOnKeyPressed(
                 keyEvent -> {
                     if (keyEvent.isControlDown()) {

@@ -35,9 +35,8 @@ public class CanvasElementFactory {
         return CanvasFactoryHolder.CANVAS_ELEMENT_FACTORY;
     }
 
-    public CanvasElementFactory setListener(ElementFactoryListener listener) {
+    public void setListener(ElementFactoryListener listener) {
         this.listener = listener;
-        return this;
     }
 
     public CanvasElementFactory setType(String type) {
@@ -50,14 +49,13 @@ public class CanvasElementFactory {
         return this;
     }
 
-    public CanvasElementFactory reset() {
+    public void reset() {
         type = shapeNames.get(0);
         base = new Point(0, 0);
         element = null;
         points = null;
 
         listener.onBuildingChanged();
-        return this;
     }
 
     public boolean isElementBuilding() {
@@ -97,22 +95,22 @@ public class CanvasElementFactory {
         return this;
     }
 
-    public CanvasElementFactory commit() {
+    public void commit() {
         if (element == null) {
-            return this;
+            return;
         }
 
         // last point is the temporary point
         if (points.size() - 1 >= element.getMaxPointNum() && element.getMaxPointNum() != -1) {
-            return this.finish();
+            this.finish();
+            return;
         }
         element.updatePoints(points);
 
         listener.onBuildingChanged();
-        return this;
     }
 
-    public CanvasElementFactory finish() {
+    public void finish() {
         if (element != null && listener != null) {
             // last point is the temporary point
             points.remove(points.size() - 1);
@@ -122,7 +120,6 @@ public class CanvasElementFactory {
             }
             this.reset();
         }
-        return this;
     }
 
     public void paintElement(GraphicsContext gc) {
