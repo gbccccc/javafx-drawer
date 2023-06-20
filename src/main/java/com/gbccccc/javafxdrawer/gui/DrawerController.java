@@ -23,6 +23,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
@@ -38,7 +39,10 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     @FXML
     private Canvas canvas;
     @FXML
-    public TableView<CanvasElement> elementTable;
+    private TableView<CanvasElement> elementTable;
+
+    @FXML
+    private AnchorPane choiceBoxPane;
 
     private Point originMousePoint;
     private Point lastMousePoint;
@@ -216,6 +220,10 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 event -> actionWithLog(new LabelLog(event.getRowValue(), event.getOldValue(), event.getNewValue()))
         );
         elementTable.getColumns().add(label);
+
+        choiceBoxPane.setOnMouseClicked(
+                mouseEvent -> elementTable.getSelectionModel().clearSelection()
+        );
     }
 
 
