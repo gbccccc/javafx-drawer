@@ -9,17 +9,21 @@ import com.gbccccc.javafxdrawer.gui.log.*;
 import com.gbccccc.javafxdrawer.shape.util.Point;
 import com.gbccccc.javafxdrawer.shape.util.Translation;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.*;
@@ -194,6 +198,9 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         elementTable.setItems(elements);
         elementTable.setEditable(true);
         elementTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        elementTable.getSelectionModel().selectedIndexProperty().addListener(
+                (observableValue, number, t1) -> repaint()
+        );
 
         TableColumn<CanvasElement, String> type = new TableColumn<>("Type");
         type.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getType()));
@@ -382,11 +389,25 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     }
 
     private void repaint() {
-        canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (CanvasElement element : elements) {
-            element.paint(canvas.getGraphicsContext2D());
+            // highlight selected elements
+            boolean highlightFlag = elementTable.getSelectionModel().getSelectedItems().contains(element);
+            if (highlightFlag) {
+                gc.setStroke(Color.ORANGE);
+            }
+
+            element.paint(gc);
+
+            // reset the color
+            if (highlightFlag) {
+                gc.setStroke(Color.BLACK);
+            }
         }
-        CanvasElementFactory.getCanvasElementFactory().paintElement(canvas.getGraphicsContext2D());
+
+        // temporary element
+        CanvasElementFactory.getCanvasElementFactory().paintElement(gc);
     }
 
     private void bindElements(List<CanvasElement> children) {
