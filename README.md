@@ -193,23 +193,23 @@ canvas.setOnMousePressed(
 
 ```Java
 mainScene.setOnKeyPressed(
-		keyEvent -> {
-		    Map<KeyCode, EventHandler<KeyEvent>> keyHandlers;
-		    if (!keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
-		        keyHandlers = keyOwnHandlers;
-		    } else if (keyEvent.isShiftDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown()) {
-		        keyHandlers = keyWithShiftHandlers;
-		    } else if (keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
-		        keyHandlers = keyWithControlHandlers;
-		    } else {
-		        // other ctrl, shift, alt combinations do not make sense
-		        return;
-		    }
+        keyEvent -> {
+            Map<KeyCode, EventHandler<KeyEvent>> keyHandlers;
+            if (!keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+                keyHandlers = keyOwnHandlers;
+            } else if (keyEvent.isShiftDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown()) {
+                keyHandlers = keyWithShiftHandlers;
+            } else if (keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+                keyHandlers = keyWithControlHandlers;
+            } else {
+                // other ctrl, shift, alt combinations do not make sense
+                return;
+            }
 
-		    if (keyHandlers.containsKey(keyEvent.getCode())) {
-		        keyHandlers.get(keyEvent.getCode()).handle(keyEvent);
-		    }
-		}
+            if (keyHandlers.containsKey(keyEvent.getCode())) {
+                keyHandlers.get(keyEvent.getCode()).handle(keyEvent);
+            }
+        }
 );
 ```
 
