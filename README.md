@@ -22,6 +22,10 @@
 
 松开左键：结束拖拽，完成移动操作
 
+#### 图元列表
+
+左键点击左下的图元列表项可以选中图元，选中的图元会显示为橙黄色，可双击图元的 Label 项以编辑。
+
 ### 键盘
 
 #### 图元类型选择
@@ -84,7 +88,17 @@ Ctrl + Y：恢复操作
 
 由于图元种类多、图元的创建过程长（用户需要多次选点）、已设定的参数会发生变化（鼠标移动），因此使用了结合了工厂模式和建造者模式的 `CanvasElementFactory` 类用于图元的创建。用户第一次点击画布时，工厂会根据选择的图元类型和点击位置创建一个最简单的图元显示类型对象；伴随用户的鼠标操作，工厂会维护一个点列表，其中最后一个点表示一个临时点，会根据鼠标移动而变化，每当此列表发生变化时，工厂会将此列表交给图元显示类型对象，让它自行处理选点列表；另外，图元工厂向上层提供了一个方法用于绘制正在创建的临时图元。
 
-由于结束的时机和行为不统一，上层难以在与用户交互的同时预判绘制的结束，因此上层需要使用观察者模式的回调机制异步获取完全创建完成的图元对象。`CanvasElementFactory` 维护了一个实现了 `ElementFactoryListener` 的对象的引用，而 `DrawerController` 实现了该接口：第一个方法在创建中的临时图元发生变化被调用，`DrawerController` 在此时重绘画布；第二个方法在图元创建结束且成功时被调用，`DrawerController` 在此时将新图元加入图元列表。
+由于结束的时机和行为不统一，上层难以在与用户交互的同时预判绘制的结束，因此上层需要使用观察者模式的回调机制异步获取完全创建完成的图元对象。`CanvasElementFactory` 维护了一个实现了 `ElementFactoryListener` 的对象的引用，而 `DrawerController` 实现了该接口：
+
+```Java
+public interface ElementFactoryListener {
+    void onBuildingFinished(CanvasElement element);
+
+    void onBuildingChanged();
+}
+```
+
+第一个方法在创建中的临时图元发生变化被调用，`DrawerController` 在此时重绘画布；第二个方法在图元创建结束且成功时被调用，`DrawerController` 在此时将新图元加入图元列表。
 
 另外，`CanvasElementFactory` 使用了懒汉式的单例模式向 `CanvasElementFactory` 提供功能。
 
@@ -96,7 +110,22 @@ Ctrl + Y：恢复操作
 
 ##### 实现
 
-可以利用 Java 提供的 `Clonable` 接口方便地实现简单的原型模式（组合图元 `CompositeElement` 略微特殊）。应用会维护一个被复制图元列表，在复制时，调用所有被选中图元的 `clone` 方法获取图元拷贝加入列表，粘贴时将列表中的图元拷贝加入总图元列表中，之后再调用所有这些新图元的 `clone` 方法获取新一批图元拷贝，用于可能的下一次粘贴。
+可以利用 Java 提供的 `Clonable` 接口方便地实现简单的原型模式（组合图元 `CompositeElement` 略微特殊）。应用会维护一个被复制图元列表，在复制时，调用所有被选中图元的 `clone` 方法获取图元拷贝加入列表，粘贴时将列表中的图元拷贝加入总图元列表中，之后再调用所有这些新图元的 `clone` 方法获取新一批图元拷贝，用于可能的下一次粘贴，以下为粘贴的逻辑：
+
+```Java
+if (copiedElements.isEmpty()) {
+    return;
+}
+
+addElements(copiedElements);
+
+// prepare new copies for the possible next paste
+List<CanvasElement> tempCopiedElements = new ArrayList<>(copiedElements);
+copiedElements.clear();
+for (CanvasElement element : tempCopiedElements) {
+    copiedElements.add(element.clone());
+}
+```
 
 #### 图元组合
 
@@ -118,7 +147,22 @@ Ctrl + Y：恢复操作
 
 此功能的实现基于命令模式，但有些许变化。`Log` 抽象类表示操作记录，`LogList` 类型使用了两个栈 `dones` 和 `todos`，分别维护可撤销和可恢复的操作记录：撤销时记录会从 `dones` 弹出，调用 `undo` 方法，再压入 `todos` ；恢复时记录会从 `todos` 弹出，调用 `redo` 方法，再压入 `dones` ；新增记录会被压入 `dones` ，之后会清空 `todos` 。
 
-与传统命令模式的区别在于，`Log` 对象的创建、添加到 `LogList` 的时机在操作完成后，因此新增操作记录时不会调用它的 `redo` 方法。这是由于本应用的图元移动功能使用鼠标交互，拖拽时图元会连续地移动，直到鼠标左键松开，对于过程中每一个微小的移动，都通过生成一条命令来移动图元显然是不合理的。因此在操作记录生成时，采用了上层先自行完成操作，再生成操作记录的实现方法。
+与传统命令模式的区别在于，操作记录对象的创建、添加到 `LogList` 的时机在相应操作完成之后，因此新增操作记录时不会调用它的 `redo` 方法。这是由于本应用的图元移动功能使用鼠标交互，拖拽时图元会连续地移动，直到鼠标左键松开，对于过程中每一个微小的移动，都通过生成一条命令来移动图元显然是不合理的。因此在操作记录生成时，采用了上层先自行完成操作，再生成操作记录的实现方法。以下为上层生成移动图元记录前的过程，注意即时操作的位移为 `curMousePoint.minus(lastMousePoint)` ，而操作记录的位移为 `curMousePoint.minus(originalMousePoint)` ：
+
+```Java
+List<CanvasElement> selectedElements = elementTable.getSelectionModel().getSelectedItems();
+if (selectedElements.isEmpty()) {
+    return;
+}
+
+Point curMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+Translation translation = curMousePoint.minus(lastMousePoint);
+for (CanvasElement element : selectedElements) {
+    element.move(translation);
+}
+
+logList.addLog(new MoveLog(selectedElements, curMousePoint.minus(originalMousePoint)));
+```
 
 #### 鼠标与键盘事件的处理
 
@@ -130,7 +174,7 @@ Ctrl + Y：恢复操作
 
 ##### 实现
 
-JavaFX 中的通过使用事件处理器处理事件，在本场景中，对于不同事件处理逻辑，定义不同的事件处理器才是最合理的实现方法，因此可以使用 `Map` 方便不同的事件处理器管理和使用。
+JavaFX 中的通过使用事件处理器处理事件，在本场景中，对于不同事件处理逻辑，定义不同的事件处理器才是最合理的实现方法，此时可以使用 `Map` 方便不同的事件处理器管理和使用。
 
 鼠标部分，对于每种鼠标事件类型，都使用 `Map` 维护一个操作类型到事件处理器的映射，鼠标事件总处理器只需根据操作类型使用对于的具体事件处理器即可。一个鼠标事件总处理器的例子如下：
 
