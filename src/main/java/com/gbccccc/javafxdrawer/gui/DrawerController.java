@@ -52,7 +52,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     private final Map<String, EventHandler<MouseEvent>> mouseMovedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseDraggedHandlers = new HashMap<>();
     private final Map<String, EventHandler<MouseEvent>> mouseReleasedHandlers = new HashMap<>();
-    private final Map<KeyCode, EventHandler<KeyEvent>> keyHandlers = new HashMap<>();
+    private final Map<KeyCode, EventHandler<KeyEvent>> keyOwnHandlers = new HashMap<>();
     private final Map<KeyCode, EventHandler<KeyEvent>> keyWithControlHandlers = new HashMap<>();
     private final Map<KeyCode, EventHandler<KeyEvent>> keyWithShiftHandlers = new HashMap<>();
 
@@ -276,7 +276,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         );
 
         // remove
-        keyHandlers.put(KeyCode.DELETE,
+        keyOwnHandlers.put(KeyCode.DELETE,
                 keyEvent -> {
                     List<CanvasElement> selectedElements = new ArrayList<>(elementTable.getSelectionModel().getSelectedItems());
                     if (selectedElements.isEmpty()) {
@@ -288,29 +288,29 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         );
 
         // shape shortcuts
-        keyHandlers.put(KeyCode.Q,
+        keyOwnHandlers.put(KeyCode.Q,
                 keyEvent -> shapeChoiceBox.getSelectionModel().selectPrevious()
         );
-        keyHandlers.put(KeyCode.E,
+        keyOwnHandlers.put(KeyCode.E,
                 keyEvent -> shapeChoiceBox.getSelectionModel().selectNext()
         );
 
         // operation shortcuts
-        keyHandlers.put(KeyCode.DIGIT1,
+        keyOwnHandlers.put(KeyCode.DIGIT1,
                 keyEvent -> operationChoiceBox.getSelectionModel().select("draw")
         );
-        keyHandlers.put(KeyCode.DIGIT2,
+        keyOwnHandlers.put(KeyCode.DIGIT2,
                 keyEvent -> operationChoiceBox.getSelectionModel().select("move")
         );
-        keyHandlers.put(KeyCode.A,
+        keyOwnHandlers.put(KeyCode.A,
                 keyEvent -> operationChoiceBox.getSelectionModel().selectPrevious()
         );
-        keyHandlers.put(KeyCode.D,
+        keyOwnHandlers.put(KeyCode.D,
                 keyEvent -> operationChoiceBox.getSelectionModel().selectNext()
         );
 
         // selection shortcuts
-        keyHandlers.put(KeyCode.W,
+        keyOwnHandlers.put(KeyCode.W,
                 keyEvent ->
                 {
                     if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
@@ -323,7 +323,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                     );
                 }
         );
-        keyHandlers.put(KeyCode.S,
+        keyOwnHandlers.put(KeyCode.S,
                 keyEvent -> {
                     if (elementTable.getSelectionModel().getSelectedItems().isEmpty()) {
                         elementTable.getSelectionModel().selectFirst();
@@ -373,16 +373,15 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         // basic handler
         mainScene.setOnKeyPressed(
                 keyEvent -> {
-                    if (keyEvent.isControlDown()) {
-                        if (keyWithControlHandlers.containsKey(keyEvent.getCode())) {
-                            keyWithControlHandlers.get(keyEvent.getCode()).handle(keyEvent);
-                        }
-                        return;
-                    }
-                    if (keyEvent.isShiftDown()) {
-                        if (keyWithShiftHandlers.containsKey(keyEvent.getCode())) {
-                            keyWithShiftHandlers.get(keyEvent.getCode()).handle(keyEvent);
-                        }
+                    Map<KeyCode, EventHandler<KeyEvent>> keyHandlers;
+                    if (!keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+                        keyHandlers = keyOwnHandlers;
+                    } else if (keyEvent.isShiftDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown()) {
+                        keyHandlers = keyWithShiftHandlers;
+                    } else if (keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+                        keyHandlers = keyWithControlHandlers;
+                    } else {
+                        // other ctrl, shift, alt combinations do not make sense
                         return;
                     }
 
