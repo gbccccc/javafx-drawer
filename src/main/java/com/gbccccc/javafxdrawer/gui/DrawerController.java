@@ -65,8 +65,8 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeChoiceBoxes();
-        initializeCanvas();
         initializeTable();
+        initializeCanvasMouse();
         initializeShortcutKey();
     }
 
@@ -84,7 +84,35 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
         operationChoiceBox.getSelectionModel().selectFirst();
     }
 
-    private void initializeCanvas() {
+    private void initializeTable() {
+        elementTable.setItems(elements);
+        elementTable.setEditable(true);
+        elementTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        elementTable.getSelectionModel().selectedIndexProperty().addListener(
+                (observableValue, number, t1) -> repaint()
+        );
+
+        TableColumn<CanvasElement, String> type = new TableColumn<>("Type");
+        type.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getType()));
+        elementTable.getColumns().add(type);
+
+        TableColumn<CanvasElement, String> label = new TableColumn<>("Label");
+        label.setCellFactory(TextFieldTableCell.forTableColumn());
+        label.setCellValueFactory(
+                element -> new SimpleStringProperty(element.getValue().getLabel())
+        );
+        label.setEditable(true);
+        label.setOnEditCommit(
+                event -> actionWithLog(new LabelLog(event.getRowValue(), event.getOldValue(), event.getNewValue()))
+        );
+        elementTable.getColumns().add(label);
+
+        choiceBoxPane.setOnMouseClicked(
+                mouseEvent -> elementTable.getSelectionModel().clearSelection()
+        );
+    }
+
+    private void initializeCanvasMouse() {
         CanvasElementFactory.getCanvasElementFactory().setListener(this);
         mousePressedHandlers.put("draw",
                 mouseEvent -> {
@@ -193,34 +221,6 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                         mouseReleasedHandlers.get(operation).handle(mouseEvent);
                     }
                 }
-        );
-    }
-
-    private void initializeTable() {
-        elementTable.setItems(elements);
-        elementTable.setEditable(true);
-        elementTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        elementTable.getSelectionModel().selectedIndexProperty().addListener(
-                (observableValue, number, t1) -> repaint()
-        );
-
-        TableColumn<CanvasElement, String> type = new TableColumn<>("Type");
-        type.setCellValueFactory(element -> new SimpleStringProperty(element.getValue().getType()));
-        elementTable.getColumns().add(type);
-
-        TableColumn<CanvasElement, String> label = new TableColumn<>("Label");
-        label.setCellFactory(TextFieldTableCell.forTableColumn());
-        label.setCellValueFactory(
-                element -> new SimpleStringProperty(element.getValue().getLabel())
-        );
-        label.setEditable(true);
-        label.setOnEditCommit(
-                event -> actionWithLog(new LabelLog(event.getRowValue(), event.getOldValue(), event.getNewValue()))
-        );
-        elementTable.getColumns().add(label);
-
-        choiceBoxPane.setOnMouseClicked(
-                mouseEvent -> elementTable.getSelectionModel().clearSelection()
         );
     }
 
