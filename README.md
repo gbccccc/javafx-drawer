@@ -180,36 +180,36 @@ JavaFX 中的通过使用事件处理器处理事件，在本场景中，对于�
 
 ```Java
 canvas.setOnMousePressed(
-                mouseEvent -> {
-                    String operation = operationChoiceBox.getValue();
-                    if (mousePressedHandlers.containsKey(operation)) {
-                        mousePressedHandlers.get(operation).handle(mouseEvent);
-                    }
-                }
-        );
+        mouseEvent -> {
+            String operation = operationChoiceBox.getValue();
+            if (mousePressedHandlers.containsKey(operation)) {
+                mousePressedHandlers.get(operation).handle(mouseEvent);
+            }
+        }
+);
 ```
 
 键盘部分，使用多个 `Map` ，管理不同功能键状态下的事件处理器，每个 `Map` 维护键码到事件处理器的映射，总事件处理器先判断键盘事件的发生时的组合键状态，再使用对于的 `Map` 根据键码获取对应的具体事件处理器。键盘事件总处理器代码如下：
 
 ```Java
 mainScene.setOnKeyPressed(
-            keyEvent -> {
-                Map<KeyCode, EventHandler<KeyEvent>> keyHandlers;
-                if (!keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
-                    keyHandlers = keyOwnHandlers;
-                } else if (keyEvent.isShiftDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown()) {
-                    keyHandlers = keyWithShiftHandlers;
-                } else if (keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
-                    keyHandlers = keyWithControlHandlers;
-                } else {
-                    // other ctrl, shift, alt combinations do not make sense
-                    return;
-                }
+		keyEvent -> {
+		    Map<KeyCode, EventHandler<KeyEvent>> keyHandlers;
+		    if (!keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+		        keyHandlers = keyOwnHandlers;
+		    } else if (keyEvent.isShiftDown() && !keyEvent.isControlDown() && !keyEvent.isAltDown()) {
+		        keyHandlers = keyWithShiftHandlers;
+		    } else if (keyEvent.isControlDown() && !keyEvent.isShiftDown() && !keyEvent.isAltDown()) {
+		        keyHandlers = keyWithControlHandlers;
+		    } else {
+		        // other ctrl, shift, alt combinations do not make sense
+		        return;
+		    }
 
-                if (keyHandlers.containsKey(keyEvent.getCode())) {
-                    keyHandlers.get(keyEvent.getCode()).handle(keyEvent);
-                }
-            }
-        );
+		    if (keyHandlers.containsKey(keyEvent.getCode())) {
+		        keyHandlers.get(keyEvent.getCode()).handle(keyEvent);
+		    }
+		}
+);
 ```
 
