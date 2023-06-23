@@ -42,7 +42,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
     @FXML
     private AnchorPane choiceBoxPane;
 
-    private Point originMousePoint;
+    private Point originalMousePoint;
     private Point lastMousePoint;
 
     private final ObservableList<CanvasElement> elements = FXCollections.observableList(new LinkedList<>());
@@ -153,8 +153,8 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                         return;
                     }
 
-                    originMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
-                    lastMousePoint = originMousePoint;
+                    originalMousePoint = new Point(mouseEvent.getX(), mouseEvent.getY());
+                    lastMousePoint = originalMousePoint;
                 }
         );
         mouseDraggedHandlers.put("move",
@@ -185,7 +185,7 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                         element.move(translation);
                     }
 
-                    logList.addLog(new MoveLog(selectedElements, curMousePoint.minus(originMousePoint)));
+                    logList.addLog(new MoveLog(selectedElements, curMousePoint.minus(originalMousePoint)));
                 }
         );
 
