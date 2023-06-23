@@ -1,4 +1,4 @@
-package com.gbccccc.javafxdrawer.gui.log;
+package com.gbccccc.javafxdrawer.log;
 
 import com.gbccccc.javafxdrawer.gui.canvas.element.CanvasElement;
 

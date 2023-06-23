@@ -5,12 +5,10 @@ import com.gbccccc.javafxdrawer.gui.canvas.element.CompositeElement;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.CanvasElementFactory;
 import com.gbccccc.javafxdrawer.gui.canvas.factory.ElementFactoryListener;
 import com.gbccccc.javafxdrawer.gui.canvas.element.ElementListener;
-import com.gbccccc.javafxdrawer.gui.log.*;
+import com.gbccccc.javafxdrawer.log.*;
 import com.gbccccc.javafxdrawer.shape.util.Point;
 import com.gbccccc.javafxdrawer.shape.util.Translation;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -225,7 +223,6 @@ public class DrawerController implements Initializable, ElementFactoryListener, 
                 mouseEvent -> elementTable.getSelectionModel().clearSelection()
         );
     }
-
 
     private void initializeShortcutKey() {
         // copy
