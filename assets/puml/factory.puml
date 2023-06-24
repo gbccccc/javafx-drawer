@@ -1,0 +1,39 @@
+@startuml factory
+class CanvasElementFactory {
+    String type
+    Point base
+    CanvasElement element
+    ElementFactoryListener listener
+
+    static CanvasElementFactory getCanvasElementFactory()
+
+    void setListener(ElementFactoryListener listener)
+
+    void reset()
+    CanvasElementFactory setType(String type)
+    CanvasElementFactory setBase(Point base)
+    CanvasElementFactory buildElementPrototype()
+    CanvasElementFactory addPoint(Point point)
+    CanvasElementFactory amendPoint(Point point)
+    void commit()
+    void finish()
+
+    boolean isElementBuilding()
+    void paintElement(GraphicsContext gc)
+}
+
+interface ElementFactoryListener {
+    void onBuildingFinished(CanvasElement element);
+    void onBuildingChanged();
+}
+
+class DrawerController {
+    void onBuildingFinished(CanvasElement element);
+    void onBuildingChanged();
+}
+
+class DrawerController implements ElementFactoryListener
+CanvasElementFactory o-- ElementFactoryListener
+
+CanvasElementFactory o-- CanvasElementFactory : instance
+@enduml

@@ -1,0 +1,67 @@
+@startuml log
+class LogList {
+    final Stack<Log> dones;
+    final Stack<Log> todos;
+
+    void undo()
+    void redo()
+    void addLog()
+}
+
+LogList o-- Log
+
+abstract class Log {
+    abstract void undo();
+    abstract void redo();
+}
+
+class AddLog extends Log {
+    final List<CanvasElement> toAdds
+    final ObservableList<CanvasElement> elements
+
+    void undo()
+    void redo()
+}
+
+class ReMoveLog extends Log {
+    final List<CanvasElement> toRemoves
+    final ObservableList<CanvasElement> elements
+
+    void undo()
+    void redo()
+}
+
+class LabelLog extends Log {
+    final CanvasElement element;
+    final String oldLabel;
+    final String newLabel;
+
+    void undo()
+    void redo()
+}
+
+class MoveLog extends Log {   
+    final List<CanvasElement> toMoves;
+    final Translation translation;
+
+    void undo()
+    void redo()
+}
+
+class BindLog extends Log {
+    final CompositeElement compositeElement;
+    final ObservableList<CanvasElement> elements;
+
+    void undo()
+    void redo()
+}
+
+class UnbindLog extends Log {
+    final CompositeElement compositeElement;
+    final ObservableList<CanvasElement> elements;
+    
+    void undo()
+    void redo()
+}
+
+@enduml

@@ -1,0 +1,73 @@
+@startuml composite
+abstract class CanvasElement {
+    Point base
+    final String type
+    final int minPointNum
+    final int maxPointNum
+    String label
+    ElementListener listener
+
+    CanvasElement(Point base, String type, int minPointNum, int maxPointNum)
+    abstract void updatePoints(List<Point> points)
+    abstract void paint(GraphicsContext gc)
+    void move(Translation translation)
+    CanvasElement clone()    
+}
+
+class CircleElement extends CanvasElement {
+    Circle circle
+
+    CircleElement(Point base)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    CanvasElement clone()
+}
+
+class EllipseElement extends CanvasElement {
+    Ellipse ellipse
+
+    EllipseElement(Point base)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    CanvasElement clone()
+}
+
+class LineElement extends CanvasElement {
+    Line line
+
+    LineElement(Point base)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    CanvasElement clone()
+}
+
+class PolygonElement extends CanvasElement {
+    Polygon polygon
+
+    PolygonElement(Point base)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    CanvasElement clone()
+}
+
+class RectangleElement extends CanvasElement {
+    Rectangle Rectangle
+
+    RectangleElement(Point base)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    CanvasElement clone()
+}
+
+class CompositeElement extends CanvasElement {
+    List<CanvasElement> children
+
+    CompositeElement(List<CanvasElement> children)
+    void updatePoints(List<Point> points)
+    paint(GraphicsContext gc)
+    List<CanvasElement> getChildren()
+    CanvasElement clone()
+}
+
+CompositeElement o--- CanvasElement : children
+@enduml

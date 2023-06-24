@@ -102,6 +102,10 @@ public interface ElementFactoryListener {
 
 另外，`CanvasElementFactory` 使用了懒汉式的单例模式向 `CanvasElementFactory` 提供功能。
 
+以下为图元工厂的简要类图：
+
+<img src="./assets/factory.png" style="zoom: 67%;" />
+
 #### 复制粘贴
 
 ##### 分析
@@ -137,6 +141,10 @@ for (CanvasElement element : tempCopiedElements) {
 
 采用了安全组合模式，`CompositeElement` 与其他基本图元显示类型同样继承自 `CanvasElement` 抽象类，它维护了一个子图元列表，对于图元的公共功能，遍历调用子图元的对应方法即可实现；对于解耦合功能，`CompositeElement` 额外提供了一个 `getChildren` 方法，用于获取它的所有子图元。
 
+以下为图元相关类型的简要类图：
+
+<img src="./assets/element.png" style="zoom:150%;" />
+
 #### 操作撤销与恢复
 
 ##### 分析
@@ -164,6 +172,10 @@ for (CanvasElement element : selectedElements) {
 logList.addLog(new MoveLog(selectedElements, curMousePoint.minus(originalMousePoint)));
 ```
 
+以下为操作记录相关类型的简要类图：
+
+<img src="./assets/log.png"  />
+
 #### 鼠标与键盘事件的处理
 
 ##### 分析
@@ -189,7 +201,7 @@ canvas.setOnMousePressed(
 );
 ```
 
-键盘部分，使用多个 `Map` ，管理不同功能键状态下的事件处理器，每个 `Map` 维护键码到事件处理器的映射，总事件处理器先判断键盘事件的发生时的组合键状态，再使用对于的 `Map` 根据键码获取对应的具体事件处理器。键盘事件总处理器代码如下：
+键盘部分，使用多个 `Map` ，管理不同功能键状态下的事件处理器，每个 `Map` 维护一个键码到事件处理器的映射，总事件处理器先判断键盘事件的发生时的组合键状态，再使用对于的 `Map` 根据键码获取对应的具体事件处理器。键盘事件总处理器代码如下：
 
 ```Java
 mainScene.setOnKeyPressed(
